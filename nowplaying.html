@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+		                <audio src="http://147.78.66.210:8000/live" controls></audio>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Now playing</title>
+</head>
+<body>
+
+<!-- current track title (begin) -->
+<b>Playing track title: </b><span id="np_current_track"></span>
+<br><br>
+<b>Recently played tracks: </b>
+<div id="np_recent_tracks"></div>
+
+<script>
+    function updateTitleDisplay() {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if ((xmlhttp.readyState === 4) && (xmlhttp.status === 200)) {
+                var s = xmlhttp.responseText;
+                s = s.split('\n');
+                //current track
+                document.querySelector('#np_current_track').innerHTML = s[0];
+                //recently played
+                var t = '', i;
+                for (i = 1; i < s.length; i++) {
+                    t += s[i];
+                    if (i !== s.length - 1)
+                        t += '<br>';
+                }
+                document.querySelector('#np_recent_tracks').innerHTML = t;
+            }
+        };
+        //random number to prevent caching
+        var rand_no = Math.random() * 1000;
+        xmlhttp.open("GET", "nowplaying_title.txt?" + rand_no, true);
+        xmlhttp.send();
+    }
+
+    //update every 5 seconds
+    document.addEventListener('DOMContentLoaded', function () {
+        setInterval(updateTitleDisplay, 5000);
+        updateTitleDisplay();
+    });
+</script>
+<!-- current track title (end) -->
+
+<br>
+
+<!-- playing track artwork (begin) -->
+<b>Playing track artwork:</b>
+<br>
+<img id="np_track_artwork" src="nowplaying_artwork.png" alt="Playing track artwork" width="200" height="200">
+
+<script>
+    function updateArtworkDisplay() {
+        document.querySelector('#np_track_artwork').src = 'nowplaying_artwork.png?' + new Date().getTime();
+    }
+
+    //update every 10 seconds
+    document.addEventListener('DOMContentLoaded', function () {
+        setInterval(updateArtworkDisplay, 10000);
+    });
+</script>
+<!-- playing track artwork (end) -->
+
+</body>
+</html>
